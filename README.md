@@ -77,17 +77,7 @@ const router = require('express').Router()
 module.exports = router
 ```
 
-- **Views**: To keep things nice and clean, we will also create separate folders for `celebrities` and `movies`: `views/celebrities` and `views/movies`. Also, we will create a couple of files in each folder:
-
-  - `views/celebrities/celebrities.hbs`
-  - `views/celebrities/new-celebrity.hbs`
-
-  - `views/movies/movies.hbs`
-  - `views/movies/new-movie.hbs`
-  - `views/movies/movie-details.hbs`
-  - `views/movies/edit-movie.hbs`
-
-Obviously, naming is the matter of preference so we used very descriptive names for routes and views.
+Obviously, naming is the matter of preference so we used very descriptive names for routes.
 
 ## Iteration #2: The `Celebrity` model
 
@@ -105,49 +95,38 @@ Go ahead and locate the `Celebrity.model.js` model file in the `models` folder. 
 
 Now that we have defined _Celebrity_ model, let's make it so the user can **add new celebrities to the database**.
 
-| Route                 | HTTP Verb | Description                                                                                   |
-| --------------------- | --------- | --------------------------------------------------------------------------------------------- |
-| `/celebrities/create` | GET       | Show a form to create a celebrity                                                             |
-| `/celebrities/create` | POST      | Send the data from the form to this route to create the celebrity and save it to the database |
+| Route           | HTTP Verb | Description                                                                                   |
+| --------------- | --------- | --------------------------------------------------------------------------------------------- |
+| `/celebrities/` | POST      | Send the data from the form to this route to create the celebrity and save it to the database |
 
 ### Steps we will follow in this iteration:
 
-1. In the routes file (`routes/celebrities.routes.js`) create the following GET route: `/celebrities/create`
-2. In that route we have to render the `celebrities/new-celebrity` view
-3. In that view file:
-   - Add an `<h2>` for the page's heading.
-   - Add a `<form>` tag that makes a POST request to `/celebrities/create`.
-   - Add `<input>` tags inside the form so the user can fill in values for each attribute of the celebrity. Make an input for `name`, `occupation`, and `catchPhrase`
-   - Add a `<button>` tag in the form so the user can submit the form once they are done filling it out.
-4. Create the `/celebrities/create` POST route in `routes/celebrities.routes.js`.
-5. In that route we have to **create** an instance of the `Celebrity` model (don't forget, we should get all the info from the form through _req.body_)
-   - If there is an error, render the `celebrities/new-celebrity` view so the user can try again and
-   - If there is no error, redirect to the page with the list of celebrities. This route will be created in the next iteration `/celebrities`
-6. In the `views/index.hbs` view file:
-   - Add a link that goes to the page you just created with the form to create a new celebrity.
+1. Create the `/celebrities/create` POST route in `routes/celebrities.routes.js`.
+2. In that route we have to **create** an instance of the `Celebrity` model (don't forget, we should get all the info from the form through _req.body_)
+   - If there is an error, return `400 BAD REQUEST` with an error message
+   - If there is no error, return `201 CREATED` with the created celebrity
+3. In Postman:
+   - Test test test!
 
 ## Iteration #4: Listing Our Celebrities
 
-Now, when we've got some celebrities in the database, we can start working with them in our Express app. Let's **display a list of all the celebrities**.
+Now, when we've got some celebrities in the database, we can start working with them in our Express app. Let's **send a list of all the celebrities**.
 
 Here's the route we will be using:
 
-| Route          | HTTP Verb | Description          |
-| -------------- | --------- | -------------------- |
-| `/celebrities` | GET       | Show all celebrities |
+| Route          | HTTP Verb | Description            |
+| -------------- | --------- | ---------------------- |
+| `/celebrities` | GET       | Return all celebrities |
 
 ### Steps we will follow in this iteration:
 
 1. Create the `/celebrities` GET route in `routes/celebrities.routes.js`.
 2. In the route:
    - Use `find()` method on the `Celebrity` model to retrieve all the celebrities
-   - If everything is okay, render the `celebrities/celebrities.hbs` view and pass the array of celebrities into the view as a variable
-   - If there's an error, catch it
-3. In the `views/celebrities/celebrities.hbs` view file:
-   - Add an `<h2>` tag for the page's heading.
-   - Use a hbs `#each` loop to display tags with each celebrity's `name`.
-4. In the `views/index.hbs` (homepage) file:
-   - Add a link that goes to the `/celebrities` route.
+   - If everything is okay, send the array of celebrities as JSON
+   - If there's an error, catch it and send a `500 INTERNAL SERVER ERROR` response
+3. In Postman:
+   - Test test test!
 
 **Celebrities - Done! At least for now.** 😉
 
@@ -170,82 +149,79 @@ Go back and review what you did to create the `Celebrity` model. You'll need to 
 
 Okay, the next step is to make it so the user can **add new movies to the database**.
 
-| Route            | HTTP Verb | Description                                                                               |
-| ---------------- | --------- | ----------------------------------------------------------------------------------------- |
-| `/movies/create` | GET       | Show a form to create a movie                                                             |
-| `/movies/create` | POST      | Send the data from the form to this route to create the movie and save it to the database |
+| Route      | HTTP Verb | Description                                                                  |
+| ---------- | --------- | ---------------------------------------------------------------------------- |
+| `/movies/` | POST      | Send form data to this route to create the movie and save it to the database |
 
 ### Steps we will follow in this iteration:
 
 Review how you did this for the `Celebrity` model.
 
-- Create 2 new routes, one to render page with the form on it, and one to send the data to after the form is filled out
-  - In the GET route that displays the form to create a new movie (which renders the `movies/new-movie.hbs`), make sure you pass all the celebrities from your database so your users can choose which ones are in the cast of the movie you're just creating (**hint**: You will have to use [select multiple](https://www.w3schools.com/tags/att_select_multiple.asp) tag)
-- Remember that the user should see the cast name in the option tags, but the information that should be transmitted (`value`) is the `_id` we will use for the `cast` attribute of the movie.
-- Make sure the form is making a POST request to the other route you just created (`/movies/create`)
-- In your post route, create an object with all the info you just received from the form. (Remember, `req.body`)
-- Use this object to create a new movie in the database and redirect back to the page with your list of all movies
-- Make sure to add a link to the form on the movies index page so the user can easier navigate
+1. Create a new route for creating a movie
+2. In your post route, create an object with all the info you just received from the form. (Remember, `req.body`)
+3. Use this object to create a new movie in the database and return the created movie in a JSON response
+4. In Postman, test it!
+   - For fields like `cast`, remember that the information that should be transmitted to the server is the `_id` for the cast member, because we will store this identifier as the value of the `cast` field in the database.
 
 ## Iteration #7: Listing Our Movies
 
-Now that we've got some movies in the database, let's make a page where we list all our movies, just like we did with the `Celebrity` model.
+Now that we've got some movies in the database, let's make a route which responds with a list of all our movies.
 
 Here's the route we will be using:
 
-| Route     | HTTP Verb | Description     |
-| --------- | --------- | --------------- |
-| `/movies` | GET       | Show all movies |
+| Route     | HTTP Verb | Description       |
+| --------- | --------- | ----------------- |
+| `/movies` | GET       | Return all movies |
 
 ### Steps we will follow in this iteration:
 
 Go back and review how you did this for the `celebrities`. You'll need to:
 
-- Create a GET route that will render the file in which we will display movies (`movies/movies.hbs`)
-- Use a database query to retrieve all the movies from your database and render the view
-- Use a hbs `#each` loop to display all your _movie titles_ on that page
-- Add a link to the page you just created on the home page so the user can navigate to it.
+1. Create a GET route that will return all the movies
+2. Use a database query to retrieve all the movies from your database and send the array as JSON
+3. In postman, test it!
 
-## Iteration #8: The Movie Details Page
+## Iteration #8: The Movie Details Endpoint
 
-We've got a list of all movies that displays each of their _titles_, but what if we want to see the other details? In our `movies/movies.hbs` view with our list of movies, let's add links so that the user can click on any movie's title, and go to a details page of each movie. On this page, we will show all the details of that movie.
+We've got a list of all movies that includes each of their _titles_, but what if we want more details?
+
+From our `GET /movies` tests, users of our API will receive movie ids.
+Let's add another route at `GET /movies/:id` to get all the information about that movie.
+
 Here's the route we will be using:
 
-| Route         | HTTP Verb | Description           |
-| ------------- | --------- | --------------------- |
-| `/movies/:id` | GET       | Show a specific movie |
+| Route         | HTTP Verb | Description             |
+| ------------- | --------- | ----------------------- |
+| `/movies/:id` | GET       | Return a specific movie |
 
 ### Steps we will follow in this iteration:
 
-1. We need `/:id` part to change dynamically as we click on different movies' titles. This being said, as part of the loop that displays each movie's title, add a link that goes to the `/movies/:id` route with the `:id` replaced by the actual movie's id 🔑
+1. We need the `/:id` part to change dynamically.
+   - Create a new request in Postman that calls `/movies/:id`.
+   - Notice how we get an `id` variable that we can fill.
+   - Replace `:id` with a real movie id
 2. Create the `/movies/:id` GET route in `routes/movies.routes.js`.
 3. In the route:
    - On the `Movie` model call `findOne()` or `findById()` method to retrieve the details of a specific movie by its `id`
      - Don't forget you have `cast` as the array of celebrity `id`s, and we need to `populate()` in order to get the full data about the celebrities 🎯
-   - If everything is fine (_.then()_), render the `movies/movie-details` view and pass the variable with the movie's details into the view
+   - If everything is fine (_.then()_), send a JSON response which includes the variable with the movie's details
    - If there's an error, catch it.
-4. In the `views/movies/movie-details.hbs` view file:
-   - Add an `<h2>` for the page's heading.
-   - Display tags with the movie's `title`, `genre` and `plot`.
-   - Use a hbs `#each` loop to display the cast's `name`, `occupation` and `catchPhrase`
+4. Run your postman request.
 
 ## Iteration #9: Deleting Movies
 
-Now that we have a list of movies, a movie details page, and a page to create new movies, we only have 2 features left to implement: _editing_ movies and _deleting_ them. Since deleting is simpler, let's start with that.
+Now that we have a list of movies endpoint, a single movie endpoint, and a create movies endpoint, we only have 2 features left to implement: _editing_ movies and _deleting_ them. Since deleting is simpler, let's start with that.
 
-| Route                | HTTP Verb | Description             |
-| -------------------- | --------- | ----------------------- |
-| `/movies/:id/delete` | POST      | Delete a specific movie |
+| Route          | HTTP Verb | Description             |
+| -------------- | --------- | ----------------------- |
+| `/movies/:id/` | DELETE    | Delete a specific movie |
 
 ### Steps we will follow in this iteration:
 
-1. In the `movies/movie-details.hbs` file:
-   - Add a `<form>` tag that makes a POST request to `/movies/:id/delete` where the `:id` is replaced by the actual `id` of the movie.
-   - Add a `<button>` tag inside the form so that it can be submitted.
-2. Create the `/movies/:id/delete` POST route in your `routes/movies.routes.js` file
-3. In the route:
+1. Create the `/movies/:id/` DELETE route in your `routes/movies.routes.js` file
+2. In the route:
    - Use the `Movie` model's `findByIdAndRemove()` method to delete the specific movie by its `id`.
-   - If everything is good (`.then()`), redirect to the list of movies page
+   - If everything is good (`.then()`), send a `204 NO CONTENT` response
    - If there's an error, catch it
 
 ## Iteration #10: Editing Movies
@@ -254,34 +230,19 @@ Final piece of our CRUD puzzle: **editing existing movies**.
 
 Here are the routes we will be using:
 
-| Route              | HTTP Verb | Description                                                            |
-| ------------------ | --------- | ---------------------------------------------------------------------- |
-| `/movies/:id/edit` | GET       | Show a form to edit a movie                                            |
-| `/movies/:id/edit` | POST      | Send the data from the form to this route to update the specific movie |
+| Route          | HTTP Verb | Description                                                    |
+| -------------- | --------- | -------------------------------------------------------------- |
+| `/movies/:id/` | POST      | Send movie data to this route to update the movie with that id |
 
 ### Steps we will follow in this iteration:
 
-1. Create the `/movies/:id/edit` GET route in `routes/movies.routes.js`.
+1. Create `/movies/:id` POST route in the `routes/movies.routes.js` file
 2. In that route:
-   - Call the `Movie` model’s `findOne()` or `findById()` method to retrieve a specific movie by its _id_
-   - Call the `Celebrity` model's `find()` to retrieve all celebrities for the cast.
-   - If everything is good, render the `movies/edit-movie` view
-   - Pass the variable with the movie's details and all celebrities into the view
-3. In the `movies/edit-movie.hbs` view file:
-   - Add an `<h2>` tag for the page's heading.
-   - Add a `<form>` tag that makes a POST request to `/movies/:id` with the `:id` replaced by the actual movie's _id_.
-   - Add `<input>` tags inside the form for each attribute of the movie.
-     - **Hint**: When you render the edit form, make sure each of the input fields is pre-filled with the current value of the attribute for that movie
-   - Add `<select>` and `<option>` tags that will handle the cast attribute.
-   - **BONUS**: Make the current cast members _selected_ so the user knows who is in the cast currently.
-   - Add a `<button>` tag inside the form so that the user can submit the form once they are done editing.
-4. Create `/movies/:id` POST route in the `routes/movies.routes.js` file
-5. In that route:
-   - Create an object with movie's model keys and it's values should come from the form submission (which is `req.body`)
+   - Create an object with movie's model keys. Its values should come from the submitted data (`req.body`)
    - Now you can apply different methods - `update()` or `findByIdAndUpdate()` to find the movie and send the updated values to the database.
-   - If there is no error, redirect back to the movie details page.
+   - If there is no error, return a 200 OK with the updated movie.
 
-And we are done! Now all `movies` CRUD features are implemented with a relationship between `movies` and `celebrities`. As a **BONUS**, feel free to also add details view, edit and delete for the `celebrities`.
+And we are done! Now all `movies` CRUD features are implemented with a relationship between `movies` and `celebrities`. As a **BONUS**, feel free to also add details, edit and delete for the `celebrities`.
 
 ## Bonus for Celebrity model
 
