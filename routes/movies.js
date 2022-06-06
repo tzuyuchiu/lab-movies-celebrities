@@ -33,7 +33,7 @@ router.get('/movies/:id', async (req, res, next) => {
   try {
     const movieId = req.params.id;
     const populateMovieId = await Movie.findById(req.params.id).populate(
-      'celebrity'
+      'cast'
     );
     res.json(populateMovieId);
   } catch (err) {
