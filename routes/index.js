@@ -1,8 +1,11 @@
-const router = require("express").Router();
+const router = require('express').Router()
 
-/* GET home page */
-router.get("/", (req, res, next) => {
-  res.render("index");
-});
+/* GET /
 
-module.exports = router;
+This is a health check. It allows us to see that the API is running.
+*/
+router.get('/', (req, res, next) =>
+  res.json({ success: true, name: 'lab-express-cinema' })
+)
+
+module.exports = router
